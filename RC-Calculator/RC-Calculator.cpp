@@ -4,32 +4,34 @@
 #include <iostream>
 #include<string.h>
 #include <math.h>
+#include <limits.h>
+
 
 using namespace std;
 
 float Csnub{}, Rsnub{}, Iload{}, dVdt_max{}, Lload{}, V_Load_max{}, F{}, cap{}, Wres{};
-string SI{};
+string SIInduction{};
 
-float CalcCapacitor(float Iload, float dVdt_max)
+static float CalcCapacitor(float Iload, float dVdt_max)
 {
     Csnub = Iload / (dVdt_max * 1000000);
     Csnub *= pow(10, 3);
       return Csnub;
 }
-float CalcResistor(float Lload, float Csnub)
+static float CalcResistor(float Lload, float Csnub)
 {
-    if (SI=="uH")
+    if (SIInduction=="uH")
     {
         Lload *= pow(10, -6);
     }
-    if (SI=="mH")
+    if (SIInduction=="mH")
     {
         Lload *= pow(10, -3);
     }
     Rsnub = sqrt(Lload / Csnub);
     return Rsnub;
 }
-float CalcWres(float V_Load_max, float F, float Csnub)
+static float CalcWres(float V_Load_max, float F, float Csnub)
 {
     Wres = (0.5 * Csnub) * (V_Load_max * V_Load_max) * F ;
     return Wres;
@@ -38,55 +40,123 @@ float CalcWres(float V_Load_max, float F, float Csnub)
 int main()
 {
     setlocale(LC_ALL, "Russian");
-
-    int funConsole();
+    while (true)
     {
-        //ввод/вывод данных
-        while (true)
+        int funConsole();
         {
-            cin >> SI;
-            if (SI == "uH" || SI == "mH")
-                break;
-            else {
-                cout << "не корректный ввод единиц измерения\n"; //return false;
+            cout << "ведите по очереди или через пробел: рабочее напряжене (V), ток (Imax)\n";
+
+            while (true)
+            {
+                cin >> V_Load_max >> Iload;
+                if (cin.fail())//функция проверки на ошибки ввода
+                {
+                    cin.clear();//сброс состояния ошибки
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');//очистка буффера
+                    cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+
+                }
+                else {
+                    cout << "введите значения индуктивности нагрузки\n";
+                    cin >> Lload;
+
+                    if (cin.fail())
+                    {
+
+                        cin.clear();
+                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+
+                    }
+                    else {
+                        cout << "выедите dV/dt (v/uS) (см. datasheet)\n";
+                        cin >> dVdt_max;
+
+                        if (cin.fail())
+                        {
+                            cin.clear();
+                            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+
+                        }
+                        else {
+                            cout << "dV/dt = " << dVdt_max << "V/uS\n" << "введите частоту переключения (Hz)\n";
+                            cin >> F;
+
+                            if (cin.fail())
+                            {
+                                cin.clear();
+                                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+
+                            }
+                            else
+                            {
+                                cout << "F = " << F << "Hz\n";
+
+                                if (cin.fail())
+                                {
+                                    cin.clear();
+                                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                    cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+
+                                }
+                                else
+                                {
+                                    cout << "введите единици измерения индуктивности (uH или mH)\n";
+                                    while (true)
+                                    {
+                                        cin >> SIInduction;
+                                        if (SIInduction == "uH" || SIInduction == "mH")
+                                            break;
+                                        else {
+                                            cout << "не корректный ввод единиц измерения\n";
+                                        }
+
+                                    }
+
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
             }
 
         }
-        cout << "ведите по очереди или через пробел: рабочее напряжене (V), ток нагрузки(Imax)\n";
-        cin >> V_Load_max;
-        cin >> Iload;
-        cout << "Vmax = " << V_Load_max << " V\n";
-        cout << "Iload = " << Iload << " A\n";
-        cout << "введите значения индуктивности нагрузки "/*и единици измерения(uH, mH)"*/;
-        cin >> Lload;
-        cout << "введите единици измерения (uH или mH)"; 
- /*       while (true)
-        {
-            cin >> SI;
-            if (SI == "uH" || SI == "mH")
-                break;
-            else {
-                cout << "не корректный ввод единиц измерения\n"; //return false;
-            }
+        CalcCapacitor(Iload, dVdt_max);
+        CalcResistor(Lload, Csnub);
+        CalcWres(V_Load_max, F, Csnub);
 
-        }*/
-        cout << "Lload = " << Lload << "uH\n";
-        cout << "выедите dV/dt (v/uS) (см. datasheet)";
-        cin >> dVdt_max;
-        cout << "dV/dt = " << dVdt_max << "V/uS\n";
-        cout << "введите частоту переключения (Hz)";
-        cin >> F;
-        cout << "F = " << F << "Hz\n";
-            
-        
-    }
-    CalcCapacitor(Iload, dVdt_max);
-    CalcResistor(Lload, Csnub);
-    CalcWres(V_Load_max, F, Csnub);
-   
-        cout << "емкость конденсатора снаббера = " << Csnub << SI <<"\n";
-        cout << "сопративление резистора снаббера = " << Rsnub <<" Ohm\n";
+        cout << "емкость конденсатора снаббера = " << Csnub << SIInduction << "\n";
+        cout << "сопративление резистора снаббера = " << Rsnub << " Ohm\n";
         cout << "мощность резистора снаббера = " << Wres << " W\n";
+        cout << "Повторить расчет? Да - 'y', Нет - 'n'\n";
+        while (true)
+        {
+            char action{};
+            if (cin >> action)
+
+                if (action == 'y')
+                {
+                    break;
+                }
+                else if (action == 'n')
+                {
+                   return false;
+                }
+                else if ((action != 'y') && (action != 'n'))
+                    while (true)
+                    {
+                        cout << "НЕ КОРРЕКТНЫЙ ВВОД!\n";
+                        break;
+                    }
+
+        }
+    }
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

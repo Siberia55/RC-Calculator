@@ -9,45 +9,74 @@
 
 using namespace std;
 
-float Csnub{}, Rsnub{}, Iload{}, dVdt_max{}, Lload{}, V_Load_max{}, F{}, cap{}, Wres{};
-string SIInduction{};
+float Csnub{}, Rsnub{}, Iload{}, dVdt_max{}, Lload{}, V_Load_max{}, F{}, Ccap{}, Wres{};
+
+string SIInduction,  SICap{};
 
 static float CalcCapacitor(float Iload, float dVdt_max)
 {
-    Csnub = Iload / (dVdt_max * 1000000);
-    Csnub *= pow(10, 3);
-      return Csnub;
+    Csnub = Iload / (dVdt_max * 1000000);// (dVdt_max * 1000000) перевод из микросекунд в секунды
+      
+    return Csnub; 
 }
-static float CalcResistor(float Lload, float Csnub)
+static float CalcResistor(float Lload, float Csnub, string SIInduction)
 {
     if (SIInduction=="uH")
     {
-        Lload *= pow(10, -6);
+        Lload *= (1*pow(10, -6));
     }
     if (SIInduction=="mH")
     {
-        Lload *= pow(10, -3);
+        Lload *=(1* pow(10, -3));
     }
     Rsnub = sqrt(Lload / Csnub);
     return Rsnub;
 }
 static float CalcWres(float V_Load_max, float F, float Csnub)
 {
-    Wres = (0.5 * Csnub) * (V_Load_max * V_Load_max) * F ;
+    Wres = (Csnub/2) * pow(V_Load_max,2) * F ;
     return Wres;
+}
+
+static string setvariable(float Csnub, float &Ccap)
+{
+    if ((Csnub >= (1 * pow(10, -7))) && (Csnub <= (1 * pow(10, -2))))
+    {
+        SICap = "uF";
+        Ccap = Csnub * pow(10, 6);
+    }
+    else if ((Csnub >= (1 * pow(10, -10))) && (Csnub <= (1 * pow(10, -5))))
+    {
+        SICap = "nF";
+        Ccap = Csnub * pow(10, 9);
+    }
+    else if ((Csnub >= (1 * pow(10, -13))) && (Csnub <= (1 * pow(10, -8))))
+    {
+        SICap = "pF";
+        Ccap = Csnub * pow(10, 12);
+    }
+    else
+    SICap = "not unit";
+
+    return SICap;
 }
 
 int main()
 {
+ 
     setlocale(LC_ALL, "Russian");
+
     while (true)
     {
+            
+        
         int funConsole();
         {
-            cout << "ведите по очереди или через пробел: рабочее напряжене (V), ток (Imax)\n";
+            //cout << "ведите по очереди или через пробел: рабочее напряжене (в V), ток (Imax, А)\n";
 
             while (true)
             {
+                cout << "ведите по очереди или через пробел: рабочее напряжене (в V), ток (Imax, А)\n";
                 cin >> V_Load_max >> Iload;
                 if (cin.fail())//функция проверки на ошибки ввода
                 {
@@ -57,8 +86,8 @@ int main()
 
                 }
                 else {
-                    cout << "введите значения индуктивности нагрузки\n";
-                    cin >> Lload;
+                    cout << "введите частоту переключения в Гц\n";
+                    cin >> F;
 
                     if (cin.fail())
                     {
@@ -69,7 +98,7 @@ int main()
 
                     }
                     else {
-                        cout << "выедите dV/dt (v/uS) (см. datasheet)\n";
+                        cout << "введите dV/dt (v/uS) (см. datasheet)\n";
                         cin >> dVdt_max;
 
                         if (cin.fail())
@@ -80,8 +109,8 @@ int main()
 
                         }
                         else {
-                            cout << "dV/dt = " << dVdt_max << "V/uS\n" << "введите частоту переключения (Hz)\n";
-                            cin >> F;
+                            cout << "dV/dt = " << dVdt_max << " V/uS\n" << "введите значение индуктивности\n";
+                            cin >> Lload;
 
                             if (cin.fail())
                             {
@@ -92,11 +121,11 @@ int main()
                             }
                             else
                             {
-                                cout << "F = " << F << "Hz\n";
+                                cout << "L= " << Lload << "\n";
 
                                 if (cin.fail())
                                 {
-                                    cin.clear();
+                                    cin.clear(); 
                                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                                     cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
@@ -127,19 +156,25 @@ int main()
             }
 
         }
-        CalcCapacitor(Iload, dVdt_max);
-        CalcResistor(Lload, Csnub);
-        CalcWres(V_Load_max, F, Csnub);
 
-        cout << "емкость конденсатора снаббера = " << Csnub << SIInduction << "\n";
+
+        CalcCapacitor(Iload, dVdt_max);
+        CalcResistor(Lload, Csnub, SIInduction);
+        CalcWres(V_Load_max, F, Csnub);
+        
+        setvariable(Csnub, Ccap);
+
+        cout << "емкость конденсатора снаббера = " << Csnub << "  " <<Ccap << SICap << "\n";
         cout << "сопративление резистора снаббера = " << Rsnub << " Ohm\n";
         cout << "мощность резистора снаббера = " << Wres << " W\n";
         cout << "Повторить расчет? Да - 'y', Нет - 'n'\n";
+
+       
         while (true)
         {
             char action{};
             if (cin >> action)
-
+                 
                 if (action == 'y')
                 {
                     break;

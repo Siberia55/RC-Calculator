@@ -82,7 +82,7 @@ int main()
                 {
                     cin.clear();//сброс состояния ошибки
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');//очистка буффера
-                    cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+                    cout << "УПС! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
                 }
                 else {
@@ -94,18 +94,18 @@ int main()
 
                         cin.clear();
                         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+                        cout << "УПС! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
                     }
                     else {
-                        cout << "введите dV/dt (v/uS) (см. datasheet)\n";
+                        cout << "введите dV/dt (v/uS) (см. datasheet симистора)\n";
                         cin >> dVdt_max;
 
                         if (cin.fail())
                         {
                             cin.clear();
                             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                            cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+                            cout << "ОЙ! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
                         }
                         else {
@@ -116,7 +116,7 @@ int main()
                             {
                                 cin.clear();
                                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+                                cout << "ОЙ! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
                             }
                             else
@@ -127,7 +127,7 @@ int main()
                                 {
                                     cin.clear(); 
                                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                    cout << "FUCK! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
+                                    cout << "УПС! НЕ КОРРЕКТНЫЙ ВВОД!ПОВТОРИТЕ СНАЧАЛА!\n";
 
                                 }
                                 else
@@ -165,7 +165,7 @@ int main()
         setvariable(Csnub, Ccap);
 
         cout << "емкость конденсатора снаббера = " << Csnub << "  " <<Ccap << SICap << "\n";
-        cout << "сопративление резистора снаббера = " << Rsnub << " Ohm\n";
+        cout << "сопротивление резистора снаббера = " << Rsnub << " Ohm\n";
         cout << "мощность резистора снаббера = " << Wres << " W\n";
         cout << "Повторить расчет? Да - 'y', Нет - 'n'\n";
 
